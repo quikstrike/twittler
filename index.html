@@ -3,25 +3,65 @@
   <head>
     <script src="jquery.js"></script>
     <script src="data_generator.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.96.1/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.96.1/js/materialize.min.js"></script>
+    <style type="text/css">
+    .tweet{
+
+    }
+    .updateArea{
+      margin-top: 50px;
+    }
+    nav .brand-logo{
+      padding-left: 40px;
+    }
+    </style>
   </head>
-  <body>
-    <script>
+  <nav>
+  <div class="nav-wrapper light-blue darken-4">
+    <a href="#" class="brand-logo">Twittler</a>
+  </div>
+</nav>
+  <body class="light-blue darken-3">
+    <div class="updateArea container z-depth-1 blue-grey lighten-5">
+     <script>
+         $(document).ready(function(){
+           $('.updateArea').on("click","a.username",function() {
+             var name = $(this).data('name');
+             $("div.modal-content").html('<h4>'+name+'\'s Tweets</h4><ul class="collection"></ul>');
+             for (var i = 0; i < streams.users[name].length; i++) {
+               var usertweet = streams.users[name][i].message;
+               $('<li class="collection-item">' +usertweet+ '</li>').appendTo('.modal-content > ul');
+             }
+             $('#blank-modal').openModal();
+           });
 
-      $(document).ready(function(){
-        var $body = $('body');
-        $body.html('');
 
-        var index = streams.home.length - 1;
-        while(index >= 0){
-          var tweet = streams.home[index];
-          var $tweet = $('<div></div>');
-          $tweet.text('@' + tweet.user + ': ' + tweet.message);
-          $tweet.appendTo($body);
-          index -= 1;
-        }
+           function printTweets(){
+               var index = streams.home.length - 1;
 
-      });
+               while(index >= 0){
+                 var tweet = streams.home[index];
+                 var $tweet = $('<div class="row"><div class="section tweet"><div class="col s2 right-align"><a class="username" class="waves-effect waves-light modal-trigger" href="#blank-modal" data-name="'+tweet.user+'">' + '@' + tweet.user + ': ' + '</a></div><div class="col s10">' + tweet.message + ' | Sent at ' + tweet.created_at + '</div></div></div><div class="divider"></div>');
+                 ($tweet).appendTo('.updateArea');
+                 streams.home.splice(index,1);
+                 index -= 1;
+               }
+           }
+           printTweets();
+           setInterval(printTweets,10000);
 
-    </script>
+
+         });
+
+       </script>
+
+    </div>
+    <div class="modal-area">
+      <div id="blank-modal" class="modal">
+        <div class="modal-content">
+        </div>
+      </div>
+    </div>
   </body>
 </html>
